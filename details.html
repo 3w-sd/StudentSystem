@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .gpa {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Details</h1>
+        <div id="studentInfo"></div>
+        <table id="gradesTable">
+            <thead>
+                <tr id="tableHeader"></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="gpa" id="gpa"></div>
+    </div>
+    <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Go Back to Home Page
+    </button>
+    
+
+    <script>
+        // Local data with grades in letters and credit hours
+        const studentsData = {
+            "CS5-22-32000165": {
+                name: "Awn M.S. Rudwan",
+                CS: {
+                    1: [
+                        { subject: "Computer Applications", grade: "A", credits: 3 },
+                        { subject: "Principles of Information Systems", grade: "A", credits: 3 },
+                        { subject: "English I", grade: "A", credits: 3 },
+                        { subject: "Calculus I", grade: "A", credits: 3 },
+                        { subject: "Introduction to Computer Scince", grade: "A", credits: 3 },
+                        { subject: "Discrete Mathmatics", grade: "A", credits: 3 },
+                        { subject: "Principles of Economics", grade: "B", credits: 3 }
+                    ],
+                    2: [
+                        { subject: "File Management", grade: "A", credits: 3 },
+                        { subject: "Introduction to Database", grade: "A", credits: 3 },
+                        { subject: "English II", grade: "B", credits: 3 },
+                        { subject: "Computer Maintenance", grade: "A", credits: 2 },
+                        { subject: "Principles of Accounting", grade: "A", credits: 3 },
+                        { subject: "Principles of Programming", grade: "A", credits: 3 },
+                        { subject: "Algebra and Geometry", grade: "A", credits: 3 },
+                        { subject: "Calculus II", grade: "A", credits: 3 }
+                        
+                    ],
+                    3: [
+                        { subject: "Digital Systems", grade: "A", credits: 3 },
+                        { subject: "Programming Methods", grade: "A", credits: 3 },
+                        { subject: "Differential Equations", grade: "B+", credits: 3 },
+                        { subject: "Multimedia", grade: "A", credits: 3 },
+                        { subject: "Database Concepts", grade: "A", credits: 3 },
+                        { subject: "Statistics and Probability I", grade: "A", credits: 3 },
+                        { subject: "System Analysis & Design", grade: "B", credits: 3 },
+                        { subject: "Numerical Computation I", grade: "A", credits: 3 }
+
+
+                    ],
+                    4:[
+                        { subject: "Computer Architecture and Organization", grade: "B", credits: 3 },
+                        { subject: "Human Computer Interaction", grade: "A", credits: 3 },
+                        { subject: "Statistics & Probabilities II", grade: "A", credits: 3 },
+                        { subject: "Database Programming", grade: "A", credits: 3 },
+                        { subject: "Algorithms and Data Structure", grade: "A", credits: 3 },
+                        { subject: "Numeric Computation II", grade: "A", credits: 3 },
+                        { subject: "Operations Research", grade: "A", credits: 3 },
+                        { subject: "Internet Technology", grade: "B+", credits: 3 }
+                    ],
+                    5: [
+                        { subject: "Programming Methods II (OOP)", grade: "A", credits: 3 },
+                        { subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                       // { subject: "Visual Programming", grade: "N/A", credits: 3 },
+                       // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
+                       // { subject: "Compilers Design", grade: "N/A", credits: 3 }
+
+                    ]
+                }
+            },
+            "CS5-22-11900273": {
+                name: "Mustafa B.O. Mohammed",
+                CS: {
+                    1: [
+                        { subject: "Computer Applications", grade: "C+", credits: 3 },
+                        { subject: "Principles of Information Systems", grade: "B", credits: 3 },
+                        { subject: "English I", grade: "C", credits: 3 },
+                        { subject: "Calculus I", grade: "F", credits: 3 },
+                        { subject: "Introduction to Computer Scince", grade: "B", credits: 3 },
+                        { subject: "Discrete Mathmatics", grade: "F", credits: 3 },
+                        { subject: "Principles of Economics", grade: "C", credits: 3 }
+                    ],
+                    2: [
+                        { subject: "File Management", grade: "F", credits: 3 },
+                        { subject: "Introduction to Database", grade: "A", credits: 3 },
+                        { subject: "English II", grade: "B", credits: 3 },
+                        { subject: "Computer Maintenance", grade: "B", credits: 2 },
+                        { subject: "Principles of Accounting", grade: "C+", credits: 3 },
+                        { subject: "Principles of Programming", grade: "F", credits: 3 },
+                        { subject: "Algebra and Geometry", grade: "C", credits: 3 },
+                        { subject: "Calculus II", grade: "F", credits: 3 }
+                        
+                    ],
+                    3: [
+                        { subject: "Digital Systems", grade: "C+", credits: 3 },
+                        { subject: "Programming Methods", grade: "C", credits: 3 },
+                        { subject: "Differential Equations", grade: "C", credits: 3 },
+                        { subject: "Multimedia", grade: "B+", credits: 3 },
+                        { subject: "Database Concepts", grade: "B+", credits: 3 },
+                        { subject: "Statistics and Probability I", grade: "A", credits: 3 },
+                        { subject: "System Analysis & Design", grade: "C", credits: 3 },
+                        { subject: "Numerical Computation I", grade: "B", crdits: 3 }
+
+
+                    ],
+                    4:[
+                        { subject: "Computer Architecture and Organization", grade: "B", credits: 3 },
+                        { subject: "Human Computer Interaction", grade: "C", credits: 3 },
+                        { subject: "Statistics & Probabilities II", grade: "C", credits: 3 },
+                        { subject: "Database Programming", grade: "C+", credits: 3 },
+                        { subject: "Algorithms and Data Structure", grade: "C", credits: 3 },
+                        { subject: "Numeric Computation II", grade: "C", credits: 3 },
+                        { subject: "Operations Research", grade: "C", credits: 3 },
+                        { subject: "Internet Technology", grade: "C", credits: 3 }
+                    ],
+                    5: [
+                        { subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
+                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                       // { subject: "Visual Programming", grade: "N/A", credits: 3 },
+                       // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
+                       // { subject: "Compilers Design", grade: "N/A", credits: 3 }
+
+                    ]
+                }
+            },
+            "IT5-22-11618445": {
+                name: "A.N. Gilani",
+                IT: {
+                    1: [
+                        { subject: "Computer Applications", grade: "A", credits: 3 },
+                        { subject: "Principles of Information Systems", grade: "C+", credits: 3 },
+                        { subject: "English I", grade: "B+", credits: 3 },
+                        { subject: "Calculus I", grade: "C+", credits: 3 },
+                        { subject: "Introduction to Information Technology", grade: "B", credits: 3 },
+                        { subject: "Discrete Mathmatics", grade: "A", credits: 3 },
+                        { subject: "Principles of Economics", grade: "C", credits: 3 },
+                        { subject: "Management", grade: "B+", credits: 3 }
+                    ],
+                    2: [
+                        { subject: "Computer Equipment and Environment", grade: "A", credits: 3 },
+                        { subject: "Computer Implemntation in Business", grade: "A", credits: 3 },
+                        { subject: "English II", grade: "C+", credits: 3 },
+                        { subject: "Computer Maintenance", grade: "A", credits: 2 },
+                        { subject: "Principles of Accounting", grade: "B+", credits: 3 },
+                        { subject: "Principles of Programming", grade: "A", credits: 3 },
+                        { subject: "Algebra and Geometry", grade: "A", credits: 3 },
+                        { subject: "Calculus II", grade: "A", credits: 3 }
+                        
+                    ],
+                    3: [
+                        { subject: "Digital Systems", grade: "B+", credits: 3 },
+                        { subject: "Programming Methods", grade: "B+", credits: 3 },
+                        { subject: "Differential Equations", grade: "A", credits: 3 },
+                        { subject: "Multimedia", grade: "B", credits: 3 },
+                        { subject: "Database Concepts", grade: "A", credits: 3 },
+                        { subject: "Statistics and Probability I", grade: "B", credits: 3 },
+                        { subject: "System Analysis & Design", grade: "B", credits: 3 },
+                        { subject: "Management", grade: "A", credits: 3 }
+
+
+                    ],
+                    4:[
+                        { subject: "Economic and Forecasting", grade: "B", credits: 3 },
+                        { subject: "Human Computer Interaction", grade: "C", credits: 3 },
+                        { subject: "Applied Statistics", grade: "B+", credits: 3 },
+                        { subject: "Database Programming", grade: "C+", credits: 3 },
+                        { subject: "Algorithms and Data Structure", grade: "B", credits: 3 },
+                        { subject: "Communication Skills", grade: "B", credits: 3 },
+                        { subject: "Operations Research", grade: "A", credits: 3 }
+                        ],
+                   // 5: [
+                        //{ subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
+                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                       // { subject: "Visual Programming", grade: "N/A", credits: 3 },
+                       // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
+                       // { subject: "Compilers Design", grade: "N/A", credits: 3 }
+
+                    //]
+                }
+                
+            },
+            "IT5-22-11411173": {
+                name: "Ethar E.E.",
+                IT: {
+                    1: [
+                        { subject: "Computer Applications", grade: "B", credits: 3 },
+                        { subject: "Principles of Information Systems", grade: "B+", credits: 3 },
+                        { subject: "English I", grade: "F", credits: 3 },
+                        { subject: "Calculus I", grade: "C+", credits: 3 },
+                        { subject: "Introduction to Information Technology", grade: "B", credits: 3 },
+                        { subject: "Discrete Mathmatics", grade: "C", credits: 3 },
+                        { subject: "Principles of Economics", grade: "C", credits: 3 },
+                        { subject: "Management", grade: "B+", credits: 3 }
+                    ],
+                    2: [
+                        { subject: "Computer Equipment and Environment", grade: "A", credits: 3 },
+                        { subject: "Computer Implemntation in Business", grade: "C", credits: 3 },
+                        { subject: "English II", grade: "F", credits: 3 },
+                        { subject: "Computer Maintenance", grade: "B", credits: 2 },
+                        { subject: "Principles of Accounting", grade: "F", credits: 3 },
+                        { subject: "Principles of Programming", grade: "C", credits: 3 },
+                        { subject: "Algebra and Geometry", grade: "B", credits: 3 },
+                        { subject: "Calculus II", grade: "A", credits: 3 }
+                        
+                    ],
+                    3: [
+                        { subject: "Digital Systems", grade: "B", credits: 3 },
+                        { subject: "Programming Methods", grade: "C", credits: 3 },
+                        { subject: "Differential Equations", grade: "C+", credits: 3 },
+                        { subject: "Multimedia", grade: "B+", credits: 3 },
+                        { subject: "Database Concepts", grade: "B", credits: 3 },
+                        { subject: "Statistics and Probability I", grade: "A", credits: 3 },
+                        { subject: "System Analysis & Design", grade: "C", credits: 3 },
+                        { subject: "Management", grade: "B", credits: 3 }
+
+
+                    ],
+                    4:[
+                        { subject: "Economic and Forecasting", grade: "C", credits: 3 },
+                        { subject: "Human Computer Interaction", grade: "C+", credits: 3 },
+                        { subject: "Applied Statistics", grade: "B", credits: 3 },
+                        { subject: "Database Programming", grade: "B", credits: 3 },
+                        { subject: "Algorithms and Data Structure", grade: "F", credits: 3 },
+                        { subject: "Communication Skills", grade: "B", credits: 3 },
+                        { subject: "Operations Research", grade: "C", credits: 3 }
+                        ],
+                   // 5: [
+                        //{ subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
+                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                       // { subject: "Visual Programming", grade: "N/A", credits: 3 },
+                       // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
+                       // { subject: "Compilers Design", grade: "N/A", credits: 3 }
+
+                    //]
+                }
+            },
+            "IT5-22-11029440": {
+                name: "Mariam M.S. Abdalla",
+                IT: {
+                    1: [
+                        { subject: "Computer Applications", grade: "C+", credits: 3 },
+                        { subject: "Principles of Information Systems", grade: "B", credits: 3 },
+                        { subject: "English I", grade: "C", credits: 3 },
+                        { subject: "Calculus I", grade: "C", credits: 3 },
+                        { subject: "Introduction to Information Technology", grade: "C", credits: 3 },
+                        { subject: "Discrete Mathmatics", grade: "C", credits: 3 },
+                        { subject: "Principles of Economics", grade: "C", credits: 3 },
+                        { subject: "Management", grade: "B+", credits: 3 }
+                    ],
+                    2: [
+                        { subject: "Computer Equipment and Environment", grade: "B+", credits: 3 },
+                        { subject: "Computer Implemntation in Business", grade: "C+", credits: 3 },
+                        { subject: "English II", grade: "F", credits: 3 },
+                        { subject: "Computer Maintenance", grade: "C+", credits: 2 },
+                        { subject: "Principles of Accounting", grade: "C", credits: 3 },
+                        { subject: "Principles of Programming", grade: "F", credits: 3 },
+                        { subject: "Algebra and Geometry", grade: "F", credits: 3 },
+                        { subject: "Calculus II", grade: "C", credits: 3 }
+                        
+                    ],
+                    3: [
+                        { subject: "Digital Systems", grade: "B", credits: 3 },
+                        { subject: "Programming Methods", grade: "C", credits: 3 },
+                        { subject: "Differential Equations", grade: "C", credits: 3 },
+                        { subject: "Multimedia", grade: "B+", credits: 3 },
+                        { subject: "Database Concepts", grade: "A", credits: 3 },
+                        { subject: "Statistics and Probability I", grade: "A", credits: 3 },
+                        { subject: "System Analysis & Design", grade: "C", credits: 3 },
+                        { subject: "Management", grade: "C+", credits: 3 }
+
+
+                    ],
+                    4:[
+                        { subject: "Economic and Forecasting", grade: "C", credits: 3 },
+                        { subject: "Human Computer Interaction", grade: "C", credits: 3 },
+                        { subject: "Applied Statistics", grade: "C", credits: 3 },
+                        { subject: "Database Programming", grade: "C+", credits: 3 },
+                        { subject: "Algorithms and Data Structure", grade: "C", credits: 3 },
+                        { subject: "Communication Skills", grade: "C", credits: 3 },
+                        { subject: "Operations Research", grade: "C", credits: 3 }
+                        ],
+                   // 5: [
+                        //{ subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
+                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                       // { subject: "Visual Programming", grade: "N/A", credits: 3 },
+                       // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
+                       // { subject: "Compilers Design", grade: "N/A", credits: 3 }
+
+                    //]
+                }
+            },
+            "IT5-22-61001069" : {
+                name: "Mahmoud T.M. Abdulaati",
+                IT: {
+                    1: [
+                        { subject: "Computer Applications", grade: "C", credits: 3 },
+                        { subject: "Principles of Information Systems", grade: "F", credits: 3 },
+                        { subject: "English I", grade: "F", credits: 3 },
+                        { subject: "Calculus I", grade: "F", credits: 3 },
+                        { subject: "Introduction to Information Technology", grade: "C", credits: 3 },
+                        { subject: "Discrete Mathmatics", grade: "C", credits: 3 },
+                        { subject: "Principles of Economics", grade: "F", credits: 3 },
+                        { subject: "Management", grade: "A", credits: 3 }
+                    ],
+                    2: [
+                        { subject: "Computer Equipment and Environment", grade: "C+", credits: 3 },
+                        { subject: "Computer Implemntation in Business", grade: "C+", credits: 3 },
+                        { subject: "English II", grade: "F", credits: 3 },
+                        { subject: "Computer Maintenance", grade: "C", credits: 2 },
+                        { subject: "Principles of Accounting", grade: "C", credits: 3 },
+                        { subject: "Principles of Programming", grade: "F", credits: 3 },
+                        { subject: "Algebra and Geometry", grade: "A", credits: 3 },
+                        { subject: "Calculus II", grade: "C", credits: 3 }
+                        
+                    ],
+                    3: [
+                        { subject: "Digital Systems", grade: "F", credits: 3 },
+                        { subject: "Programming Methods", grade: "C", credits: 3 },
+                        { subject: "Differential Equations", grade: "C", credits: 3 },
+                        { subject: "Multimedia", grade: "B+", credits: 3 },
+                        { subject: "Database Concepts", grade: "B+", credits: 3 },
+                        { subject: "Statistics and Probability I", grade: "B", credits: 3 },
+                        { subject: "System Analysis & Design", grade: "C", credits: 3 },
+                        { subject: "Management", grade: "C", credits: 3 }
+
+
+                    ],
+                    4:[
+                        { subject: "Economic and Forecasting", grade: "C", credits: 3 },
+                        { subject: "Human Computer Interaction", grade: "C", credits: 3 },
+                        { subject: "Applied Statistics", grade: "C", credits: 3 },
+                        { subject: "Database Programming", grade: "C", credits: 3 },
+                        { subject: "Algorithms and Data Structure", grade: "C", credits: 3 },
+                        { subject: "Communication Skills", grade: "F", credits: 3 },
+                        { subject: "Operations Research", grade: "C", credits: 3 }
+                        ],
+                   // 5: [
+                        //{ subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
+                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                       // { subject: "Visual Programming", grade: "N/A", credits: 3 },
+                       // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
+                       // { subject: "Compilers Design", grade: "N/A", credits: 3 }
+
+                    //]
+                }
+            },
+            "IT5-22-11607382": {
+                name: "Mohammed E.M. Mohammed",
+                IT: {
+                    1: [
+                        { subject: "Computer Applications", grade: "B", credits: 3 },
+                        { subject: "Principles of Information Systems", grade: "C", credits: 3 },
+                        { subject: "English I", grade: "B+", credits: 3 },
+                        { subject: "Calculus I", grade: "F", credits: 3 },
+                        { subject: "Introduction to Information Technology", grade: "C", credits: 3 },
+                        { subject: "Discrete Mathmatics", grade: "A", credits: 3 },
+                        { subject: "Principles of Economics", grade: "C", credits: 3 },
+                        { subject: "Management", grade: "C", credits: 3 }
+                    ],
+                    2: [
+                        { subject: "Computer Equipment and Environment", grade: "A", credits: 3 },
+                        { subject: "Computer Implemntation in Business", grade: "C", credits: 3 },
+                        { subject: "English II", grade: "C", credits: 3 },
+                        { subject: "Computer Maintenance", grade: "C+", credits: 2 },
+                        { subject: "Principles of Accounting", grade: "C", credits: 3 },
+                        { subject: "Principles of Programming", grade: "F", credits: 3 },
+                        { subject: "Algebra and Geometry", grade: "B", credits: 3 },
+                        { subject: "Calculus II", grade: "F", credits: 3 }
+                        
+                    ],
+                    3: [
+                        { subject: "Digital Systems", grade: "C+", credits: 3 },
+                        { subject: "Programming Methods", grade: "C+", credits: 3 },
+                        { subject: "Differential Equations", grade: "B", credits: 3 },
+                        { subject: "Multimedia", grade: "C", credits: 3 },
+                        { subject: "Database Concepts", grade: "B+", credits: 3 },
+                        { subject: "Statistics and Probability I", grade: "C", credits: 3 },
+                        { subject: "System Analysis & Design", grade: "B+", credits: 3 },
+                        { subject: "Management", grade: "A", credits: 3 }
+
+
+                    ],
+                    4:[
+                        { subject: "Economic and Forecasting", grade: "C", credits: 3 },
+                        { subject: "Human Computer Interaction", grade: "C+", credits: 3 },
+                        { subject: "Applied Statistics", grade: "B+", credits: 3 },
+                        { subject: "Database Programming", grade: "B", credits: 3 },
+                        { subject: "Algorithms and Data Structure", grade: "C+", credits: 3 },
+                        { subject: "Communication Skills", grade: "B", credits: 3 },
+                        { subject: "Operations Research", grade: "C+", credits: 3 }
+                        ],
+                   // 5: [
+                        //{ subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
+                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                       // { subject: "Visual Programming", grade: "N/A", credits: 3 },
+                       // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
+                       // { subject: "Compilers Design", grade: "N/A", credits: 3 }
+
+                    //]
+                }
+            }
+
+        };
+
+        // Grade points mapping
+        const gradePoints = {
+            "A": 4.0,
+            "B+": 3.5,
+            "B": 3.0,
+            "C+": 2.5,
+            "C": 2.0,
+            "F": 0
+        };
+
+        // Function to calculate GPA
+        function calculateGPA(data, semester = "all") {
+            let totalPoints = 0;
+            let totalCredits = 0;
+
+            if (semester === "all") {
+                Object.values(data).forEach(courses => {
+                    courses.forEach(course => {
+                        totalPoints += gradePoints[course.grade] * course.credits;
+                        totalCredits += course.credits;
+                    });
+                });
+            } else {
+                data[semester]?.forEach(course => {
+                    totalPoints += gradePoints[course.grade] * course.credits;
+                    totalCredits += course.credits;
+                });
+            }
+
+            return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "N/A";
+        }
+
+        function loadStudentDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const studentId = params.get('studentId');
+            const major = params.get('major');
+            const semester = params.get('semester');
+
+            const student = studentsData[studentId];
+
+            if (!student || !student[major]) {
+                document.querySelector(".container").innerHTML = "<p>No data available for this student or major.</p>";
+                return;
+            }
+
+            document.getElementById('studentInfo').innerText = `Name: ${student.name}`;
+
+            const tbody = document.querySelector("#gradesTable tbody");
+            const header = document.getElementById("tableHeader");
+            const semesters = student[major];
+
+            // Update table header based on the selection
+            if (semester === "all") {
+                header.innerHTML = `
+                    <th>Semester</th>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                    <th>Credits</th>
+                `;
+
+                Object.keys(semesters).forEach(sem => {
+                    semesters[sem].forEach(course => {
+                        const row = `<tr>
+                            <td>${sem}</td>
+                            <td>${course.subject}</td>
+                            <td>${course.grade}</td>
+                            <td>${course.credits}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                });
+
+                const gpa = calculateGPA(semesters, "all");
+                document.getElementById('gpa').innerText = `Cumulative GPA: ${gpa}`;
+            } else {
+                header.innerHTML = `
+                    <th>Subject</th>
+                    <th>Grade</th>
+                    <th>Credits</th>
+                `;
+
+                semesters[semester]?.forEach(course => {
+                    const row = `<tr>
+                        <td>${course.subject}</td>
+                        <td>${course.grade}</td>
+                        <td>${course.credits}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+
+                const gpa = calculateGPA(semesters, semester);
+                document.getElementById('gpa').innerText = `Semester GPA: ${gpa}`;
+            }
+        }
+
+        loadStudentDetails();
+    </script>
+    
+</body>
+
+</html>
