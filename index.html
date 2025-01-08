@@ -1,10 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نتائج الطلاب</title>
     <style>
+        /* الأساسيات */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header, footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto;
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+/* التصاميم المتجاوبة */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    table th, table td {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 12px;
+    }
+
+    header, footer {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 12px;
+        padding: 8px 16px;
+    }
+
+    table th, table td {
+        font-size: 10px;
+        padding: 4px;
+    }
+}
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
