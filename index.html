@@ -1,104 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student System</title>
     <style>
-        /* الأساسيات */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-header, footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #333;
-    color: white;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 15px;
-}
-
-button {
-    padding: 12px 24px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    max-width: 300px;
-    margin: 20px auto;
-    display: block;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table th, table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-table th {
-    background-color: #f2f2f2;
-}
-
-/* التصاميم المتجاوبة */
-@media (max-width: 768px) {
-    body {
-        font-size: 14px;
-    }
-
-    .container {
-        padding: 10px;
-    }
-
-    table th, table td {
-        font-size: 12px;
-        padding: 6px;
-    }
-
-    button {
-        font-size: 14px;
-        padding: 10px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        font-size: 12px;
-    }
-
-    header, footer {
-        font-size: 14px;
-    }
-
-    button {
-        font-size: 12px;
-        padding: 8px 16px;
-    }
-
-    table th, table td {
-        font-size: 10px;
-        padding: 4px;
-    }
-}
-
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -154,6 +60,30 @@ table th {
             color: red;
             margin-top: 10px;
         }
+
+        /* دائرة التحميل */
+        #loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #007bff;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* النصوص */
+        #loadingText {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -178,6 +108,8 @@ table th {
             <option value="8">8th Semester</option>
         </select>
         <button onclick="redirectToDetails()">Show Information</button>
+        <div id="loader"></div>
+        <div id="loadingText"></div>
         <div id="error"></div>
     </div>
 
@@ -193,11 +125,34 @@ table th {
                 return;
             }
 
-            // الانتقال للصفحة الثانية مع تمرير الخيارات
-            window.location.href = `details.html?studentId=${studentId}&major=${major}&semester=${semester}`;
+            // عرض دائرة التحميل
+            const loader = document.getElementById('loader');
+            const loadingText = document.getElementById('loadingText');
+            loader.style.display = 'block';
+
+            // النصوص المتتابعة
+            const messages = ["Fetching data...", "Loading information...", "Finalizing..."];
+            let index = 0;
+
+            loadingText.innerText = messages[index];
+            const interval = setInterval(() => {
+                index++;
+                if (index < messages.length) {
+                    loadingText.innerText = messages[index];
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1000);
+
+            // تعطيل الزر أثناء التحميل
+            const button = document.querySelector('button');
+            button.disabled = true;
+
+            // تأخير لمدة 3 ثوانٍ ثم الانتقال للصفحة التالية
+            setTimeout(() => {
+                window.location.href = `details.html?studentId=${studentId}&major=${major}&semester=${semester}`;
+            }, 3000);
         }
     </script>
-    
 </body>
-
 </html>
