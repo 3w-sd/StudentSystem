@@ -6,6 +6,143 @@
     <title>Student System</title>
     <style>
         body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+h1 {
+    font-size: 26px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+input:focus, select:focus {
+    border-color: #6a11cb;
+    box-shadow: 0 0 8px rgba(106, 17, 203, 0.2);
+    outline: none;
+}
+
+button {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    width: 100%;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+}
+
+#loader {
+    display: none;
+    margin: 20px auto;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #6a11cb;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    input, select, button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+        @media (max-width: 768px) {
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    input, select, button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    input, select, button {
+        font-size: 12px;
+        padding: 6px;
+    }
+}
+
+        body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
             margin: 0;
@@ -114,45 +251,26 @@
     </div>
 
     <script>
-        function redirectToDetails() {
-            const studentId = document.getElementById('studentId').value;
-            const major = document.getElementById('major').value;
-            const semester = document.getElementById('semester').value;
+       function redirectToDetails() {
+        const studentId = document.getElementById('studentId').value;
+        const major = document.getElementById('major').value;
+        const semester = document.getElementById('semester').value;
+        const errorDiv = document.getElementById('error');
 
-            // التحقق من إدخال جميع الحقول
-            if (!studentId || !major || !semester) {
-                document.getElementById('error').innerText = "Please Fill All Fields";
-                return;
-            }
-
-            // عرض دائرة التحميل
-            const loader = document.getElementById('loader');
-            const loadingText = document.getElementById('loadingText');
-            loader.style.display = 'block';
-
-            // النصوص المتتابعة
-            const messages = ["Fetching data...", "Loading information...", "Finalizing..."];
-            let index = 0;
-
-            loadingText.innerText = messages[index];
-            const interval = setInterval(() => {
-                index++;
-                if (index < messages.length) {
-                    loadingText.innerText = messages[index];
-                } else {
-                    clearInterval(interval);
-                }
-            }, 1000);
-
-            // تعطيل الزر أثناء التحميل
-            const button = document.querySelector('button');
-            button.disabled = true;
-
-            // تأخير لمدة 3 ثوانٍ ثم الانتقال للصفحة التالية
-            setTimeout(() => {
-                window.location.href = `details.html?studentId=${studentId}&major=${major}&semester=${semester}`;
-            }, 3000);
+        if (!studentId || !major || !semester) {
+            errorDiv.innerText = "⚠️ Please fill all fields!";
+            errorDiv.style.color = "red";
+            return;
         }
+
+        document.getElementById('loader').style.display = 'block';
+        document.querySelector('button').disabled = true;
+        errorDiv.innerText = "";
+
+        setTimeout(() => {
+            window.location.href = `details.html?studentId=${studentId}&major=${major}&semester=${semester}`;
+        }, 3000);
+    }
     </script>
 </body>
 </html>

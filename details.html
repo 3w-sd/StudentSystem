@@ -1,12 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+
+    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Details</title>
     <style>
+        @media (max-width: 768px) {
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    input, select, button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    input, select, button {
+        font-size: 12px;
+        padding: 6px;
+    }
+}
+
                 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
 :root {
@@ -323,9 +369,77 @@ table th {
     <button onclick="window.location.href='index.html'">
         Go Back to Home Page
     </button>
-    
+    <button onclick="downloadPDF()">
+        Download Full Report
+    </button>
+
+
 
     <script>
+        async function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // استخراج بيانات الطالب
+        const params = new URLSearchParams(window.location.search);
+        const studentId = params.get('studentId');
+        const major = params.get('major');
+        const semester = params.get('semester');
+
+        const studentData = studentsData[studentId];
+
+        if (!studentData || !studentData[major]) {
+            alert("No data available for this student.");
+            return;
+        }
+
+        const studentName = studentData.name;
+        const reportTitle = `${studentName} Report`;
+        const fileName = `${studentName}_Report.pdf`;
+
+        // عنوان التقرير
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text(reportTitle, 105, 20, { align: "center" });
+
+        // إضافة تفاصيل الطالب
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Student ID: ${studentId}`, 15, 35);
+        doc.text(`Major: ${major}`, 15, 45);
+        doc.text(`Semester: ${semester === "all" ? "All Semesters" : semester}`, 15, 55);
+
+        // إعداد الجدول
+        const tableData = [];
+        const columns = semester === "all"
+            ? ["Semester", "Subject", "Grade", "Credits"]
+            : ["Subject", "Grade", "Credits"];
+
+        if (semester === "all") {
+            Object.keys(studentData[major]).forEach(sem => {
+                studentData[major][sem].forEach(course => {
+                    tableData.push([sem, course.subject, course.grade, course.credits]);
+                });
+            });
+        } else {
+            studentData[major][semester]?.forEach(course => {
+                tableData.push([course.subject, course.grade, course.credits]);
+            });
+        }
+
+        // إدراج الجدول في PDF
+        doc.autoTable({
+            head: [columns],
+            body: tableData,
+            startY: 65,
+            theme: "striped",
+            styles: { fontSize: 10, cellPadding: 3 },
+            headStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255] },
+        });
+
+        // حفظ ملف PDF
+        doc.save(fileName);
+    }
         document.addEventListener('DOMContentLoaded', () => {
             const rows = document.querySelectorAll('#gradesTable tbody tr');
             rows.forEach((row, index) => {
@@ -396,8 +510,8 @@ table th {
                     5: [
                         { subject: "Programming Methods II (OOP)", grade: "A", credits: 3 },
                         { subject: "Computer Networks and Communications", grade: "A", credits: 3 },
-                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
-                       // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
+                        { subject: "Database Applications", grade: "A", credits: 3 },
+                        //{ subject: "Software Engineering I", grade: "N/A", credits: 3 },
                        // { subject: "Visual Programming", grade: "N/A", credits: 3 },
                        // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
                        // { subject: "Compilers Design", grade: "N/A", credits: 3 }
@@ -452,8 +566,8 @@ table th {
                     ],
                     5: [
                         { subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
-                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
-                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                        { subject: "Computer Networks and Communications", grade: "C", credits: 3 },
+                        { subject: "Database Applications", grade: "C+", credits: 3 },
                        // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
                        // { subject: "Visual Programming", grade: "N/A", credits: 3 },
                        // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
@@ -509,8 +623,8 @@ table th {
                         ],
                    5: [
                         { subject: "Software Project Management", grade: "A", credits: 3 },
-                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
-                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                        { subject: "Computer Networks and Communications", grade: "B+", credits: 3 },
+                        { subject: "Database Applications", grade: "B+", credits: 3 },
                        // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
                        // { subject: "Visual Programming", grade: "N/A", credits: 3 },
                        // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
@@ -567,8 +681,8 @@ table th {
                         ],
                    5: [
                         { subject: "Software Project Management", grade: "B+", credits: 3 },
-                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
-                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                        { subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                        { subject: "Database Applications", grade: "B+", credits: 3 },
                        // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
                        // { subject: "Visual Programming", grade: "N/A", credits: 3 },
                        // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
@@ -624,8 +738,8 @@ table th {
                         ],
                    5: [
                        { subject: "Software Project Management", grade: "B", credits: 3 },
-                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
-                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                        { subject: "Computer Networks and Communications", grade: "B+", credits: 3 },
+                        { subject: "Database Applications", grade: "B", credits: 3 },
                        // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
                        // { subject: "Visual Programming", grade: "N/A", credits: 3 },
                        // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
@@ -681,8 +795,8 @@ table th {
                         ],
                    5: [
                         //{ subject: "Programming Methods II (OOP)", grade: "C", credits: 3 },
-                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
-                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                        { subject: "Computer Networks and Communications", grade: "C", credits: 3 },
+                        { subject: "Database Applications", grade: "F", credits: 3 },
                        // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
                        // { subject: "Visual Programming", grade: "N/A", credits: 3 },
                        // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
@@ -738,8 +852,8 @@ table th {
                         ],
                    5: [
                         { subject: "Software Project Management", grade: "B", credits: 3 },
-                        //{ subject: "Computer Networks and Communications", grade: "A", credits: 3 },
-                       // { subject: "Database Applications", grade: "N/A", credits: 3 },
+                        { subject: "Computer Networks and Communications", grade: "A", credits: 3 },
+                        { subject: "Database Applications", grade: "C+", credits: 3 },
                        // { subject: "Software Engineering I", grade: "N/A", credits: 3 },
                        // { subject: "Visual Programming", grade: "N/A", credits: 3 },
                        // { subject: "Algorithms Analysis and Design", grade: "N/A", credits: 3 },
