@@ -352,10 +352,20 @@ table th {
             font-weight: bold;
             color: #333;
         }
+        .uni-logo {
+    position: absolute;
+    top: auto;
+    right: auto;
+    width: 80px;
+    height: auto;
+}
+
     </style>
 </head>
 <body>
     <div class="container">
+        <img src="uni-logo.png" alt="University Logo" class="uni-logo">
+
         <h1>Student Details</h1>
         <div id="studentInfo"></div>
         <table id="gradesTable">
@@ -380,66 +390,118 @@ table th {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // استخراج بيانات الطالب
-        const params = new URLSearchParams(window.location.search);
-        const studentId = params.get('studentId');
-        const major = params.get('major');
-        const semester = params.get('semester');
+        // تحميل صورة الشعار من الرابط المباشر
+        const logoURL = "https://upload.wikimedia.org/wikipedia/en/f/fe/National_College_Sudan_Logo.png";
 
-        const studentData = studentsData[studentId];
+        try {
+            const response = await fetch(logoURL);
+            const blob = await response.blob();
+            const reader = new FileReader();
 
-        if (!studentData || !studentData[major]) {
-            alert("No data available for this student.");
-            return;
-        }
+            reader.onloadend = function () {
+                const logoData = reader.result; // تحويل الصورة إلى Base64
 
-        const studentName = studentData.name;
-        const reportTitle = `${studentName} Report`;
-        const fileName = `${studentName}_Report.pdf`;
+                // استخراج بيانات الطالب
+                const params = new URLSearchParams(window.location.search);
+                const studentId = params.get('studentId');
+                const major = params.get('major');
+                const semester = params.get('semester');
 
-        // عنوان التقرير
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.text(reportTitle, 105, 20, { align: "center" });
+                const studentData = studentsData[studentId];
 
-        // إضافة تفاصيل الطالب
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Student ID: ${studentId}`, 15, 35);
-        doc.text(`Major: ${major}`, 15, 45);
-        doc.text(`Semester: ${semester === "all" ? "All Semesters" : semester}`, 15, 55);
+                if (!studentData || !studentData[major]) {
+                    alert("No data available for this student.");
+                    return;
+                }
 
-        // إعداد الجدول
-        const tableData = [];
-        const columns = semester === "all"
-            ? ["Semester", "Subject", "Grade", "Credits"]
-            : ["Subject", "Grade", "Credits"];
+                const studentName = studentData.name;
+                const fileName = `${studentName}_Report.pdf`;
 
-        if (semester === "all") {
-            Object.keys(studentData[major]).forEach(sem => {
-                studentData[major][sem].forEach(course => {
-                    tableData.push([sem, course.subject, course.grade, course.credits]);
+                // حساب الـ GPA
+                function calculateGPA(data, semester) {
+                    const gradePoints = { "A": 4.0, "B+": 3.5, "B": 3.0, "C+": 2.5, "C": 2.0, "F": 0 };
+                    let totalPoints = 0, totalCredits = 0;
+
+                    if (semester === "all") {
+                        Object.values(data).forEach(courses => {
+                            courses.forEach(course => {
+                                totalPoints += gradePoints[course.grade] * course.credits;
+                                totalCredits += course.credits;
+                            });
+                        });
+                    } else {
+                        data[semester]?.forEach(course => {
+                            totalPoints += gradePoints[course.grade] * course.credits;
+                            totalCredits += course.credits;
+                        });
+                    }
+
+                    return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "N/A";
+                }
+
+                const gpa = calculateGPA(studentData[major], semester);
+                const semesterText = semester === "all" ? "All Semesters" : `Semester ${semester}`;
+
+                // إدراج الشعار في أعلى يمين التقرير
+                doc.addImage(logoData, "PNG", 160, 10, 30, 30);
+
+                // ترويسة التقرير
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(18);
+                doc.text(studentName + " Report", 105, 20, { align: "center" });
+
+                // ملاحظة أن هذا ليس بيانًا رسميًا
+                doc.setFontSize(10);
+                doc.setTextColor(200, 0, 0);
+                doc.text("*** This is NOT an official statement from the university ***", 105, 30, { align: "center" });
+
+                // بيانات الطالب
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Student ID: ${studentId}`, 15, 40);
+                doc.text(`Major: ${major}`, 15, 50);
+                doc.text(`Semester: ${semesterText}`, 15, 60);
+                doc.text(`GPA: ${gpa}`, 15, 70); // ✅ عرض GPA
+
+                // إعداد الجدول
+                const tableData = [];
+                const columns = semester === "all"
+                    ? ["Semester", "Subject", "Grade", "Credits"]
+                    : ["Subject", "Grade", "Credits"];
+
+                if (semester === "all") {
+                    Object.keys(studentData[major]).forEach(sem => {
+                        studentData[major][sem].forEach(course => {
+                            tableData.push([sem, course.subject, course.grade, course.credits]);
+                        });
+                    });
+                } else {
+                    studentData[major][semester]?.forEach(course => {
+                        tableData.push([course.subject, course.grade, course.credits]);
+                    });
+                }
+
+                // إدراج الجدول في PDF
+                doc.autoTable({
+                    head: [columns],
+                    body: tableData,
+                    startY: 80,
+                    theme: "striped",
+                    styles: { fontSize: 10, cellPadding: 3 },
+                    headStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255] },
                 });
-            });
-        } else {
-            studentData[major][semester]?.forEach(course => {
-                tableData.push([course.subject, course.grade, course.credits]);
-            });
+
+                // حفظ ملف PDF
+                doc.save(fileName);
+            };
+
+            reader.readAsDataURL(blob); // تحويل الصورة إلى Base64
+        } catch (error) {
+            console.error("Error loading logo:", error);
+            alert("Failed to load university logo.");
         }
-
-        // إدراج الجدول في PDF
-        doc.autoTable({
-            head: [columns],
-            body: tableData,
-            startY: 65,
-            theme: "striped",
-            styles: { fontSize: 10, cellPadding: 3 },
-            headStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255] },
-        });
-
-        // حفظ ملف PDF
-        doc.save(fileName);
     }
+
         document.addEventListener('DOMContentLoaded', () => {
             const rows = document.querySelectorAll('#gradesTable tbody tr');
             rows.forEach((row, index) => {
