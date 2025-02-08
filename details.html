@@ -7,6 +7,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Details</title>
     <style>
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+:root {
+    --primary-color: #6a11cb;
+    --secondary-color: #2575fc;
+    --accent-color: #8e2de2;
+    --text-color: #2c3e50;
+}
+
+* {
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideUp {
+    0% { transform: translateY(50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 2.2em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+table th {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-weight: 500;
+    padding: 15px;
+    text-align: center;
+}
+
+table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+
+table tr:hover td {
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.gpa {
+    text-align: center;
+    font-size: 1.4em;
+    padding: 15px;
+    background: linear-gradient(135deg, #fff, #f8f9fa);
+    border-radius: 8px;
+    margin-top: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin: 25px auto;
+    box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.3),
+        transparent
+    );
+    transition: all 0.6s;
+}
+
+button:hover::after {
+    left: 100%;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        padding: 20px;
+    }
+    
+    table {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    table th,
+    table td {
+        padding: 10px;
+    }
+    
+    .gpa {
+        font-size: 1.2em;
+    }
+}
         /* الأساسيات */
 body {
     font-family: Arial, sans-serif;
@@ -159,12 +320,32 @@ table th {
         </table>
         <div class="gpa" id="gpa"></div>
     </div>
-    <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    <button onclick="window.location.href='index.html'">
         Go Back to Home Page
     </button>
     
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('#gradesTable tbody tr');
+            rows.forEach((row, index) => {
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+
+        // Add initial styles for animation
+        const style = document.createElement('style');
+        style.textContent = `
+            #gradesTable tbody tr {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all 0.4s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
         // Local data with grades in letters and credit hours
         const studentsData = {
             "CS5-22-32000165": {
