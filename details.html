@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
     <link rel="shortcut icon" type="image/x-icon" href="uni-logo.png" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -388,120 +390,142 @@ table th {
 
     <script>
         async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-        // تحميل صورة الشعار من الرابط المباشر
-        const logoURL = "https://upload.wikimedia.org/wikipedia/en/f/fe/National_College_Sudan_Logo.png";
+    // تحميل صورة الشعار من الرابط المباشر
+    const logoURL = "https://upload.wikimedia.org/wikipedia/en/f/fe/National_College_Sudan_Logo.png";
 
-        try {
-            const response = await fetch(logoURL);
-            const blob = await response.blob();
-            const reader = new FileReader();
+    try {
+        const response = await fetch(logoURL);
+        const blob = await response.blob();
+        const reader = new FileReader();
 
-            reader.onloadend = function () {
-                const logoData = reader.result; // تحويل الصورة إلى Base64
+        reader.onloadend = function () {
+            const logoData = reader.result; // تحويل الصورة إلى Base64
 
-                // استخراج بيانات الطالب
-                const params = new URLSearchParams(window.location.search);
-                const studentId = params.get('studentId');
-                const major = params.get('major');
-                const semester = params.get('semester');
+            // استخراج بيانات الطالب
+            const params = new URLSearchParams(window.location.search);
+            const studentId = params.get('studentId');
+            const major = params.get('major');
+            const semester = params.get('semester');
 
-                const studentData = studentsData[studentId];
+            const studentData = studentsData[studentId];
 
-                if (!studentData || !studentData[major]) {
-                    alert("No data available for this student.");
-                    return;
-                }
+            if (!studentData || !studentData[major]) {
+                alert("No data available for this student.");
+                return;
+            }
 
-                const studentName = studentData.name;
-                const fileName = `${studentName}_Report.pdf`;
+            const studentName = studentData.name;
+            const fileName = `${studentName}_Report.pdf`;
 
-                // حساب الـ GPA
-                function calculateGPA(data, semester) {
-                    const gradePoints = { "A": 4.0, "B+": 3.5, "B": 3.0, "C+": 2.5, "C": 2.0, "F": 0 };
-                    let totalPoints = 0, totalCredits = 0;
+            // حساب الـ GPA
+            function calculateGPA(data, semester) {
+                const gradePoints = { "A": 4.0, "B+": 3.5, "B": 3.0, "C+": 2.5, "C": 2.0, "F": 0 };
+                let totalPoints = 0, totalCredits = 0;
 
-                    if (semester === "all") {
-                        Object.values(data).forEach(courses => {
-                            courses.forEach(course => {
-                                totalPoints += gradePoints[course.grade] * course.credits;
-                                totalCredits += course.credits;
-                            });
-                        });
-                    } else {
-                        data[semester]?.forEach(course => {
+                if (semester === "all") {
+                    Object.values(data).forEach(courses => {
+                        courses.forEach(course => {
                             totalPoints += gradePoints[course.grade] * course.credits;
                             totalCredits += course.credits;
                         });
-                    }
-
-                    return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "N/A";
-                }
-
-                const gpa = calculateGPA(studentData[major], semester);
-                const semesterText = semester === "all" ? "All Semesters" : `Semester ${semester}`;
-
-                // إدراج الشعار في أعلى يمين التقرير
-                doc.addImage(logoData, "PNG", 160, 10, 30, 30);
-
-                // ترويسة التقرير
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(18);
-                doc.text(studentName + " Report", 105, 20, { align: "center" });
-
-                // ملاحظة أن هذا ليس بيانًا رسميًا
-                doc.setFontSize(10);
-                doc.setTextColor(200, 0, 0);
-                doc.text("*** This is NOT an official statement from the university ***", 105, 30, { align: "center" });
-
-                // بيانات الطالب
-                doc.setFontSize(12);
-                doc.setTextColor(0, 0, 0);
-                doc.text(`Student ID: ${studentId}`, 15, 40);
-                doc.text(`Major: ${major}`, 15, 50);
-                doc.text(`Semester: ${semesterText}`, 15, 60);
-                doc.text(`GPA: ${gpa}`, 15, 70); // ✅ عرض GPA
-
-                // إعداد الجدول
-                const tableData = [];
-                const columns = semester === "all"
-                    ? ["Semester", "Subject", "Grade", "Credits"]
-                    : ["Subject", "Grade", "Credits"];
-
-                if (semester === "all") {
-                    Object.keys(studentData[major]).forEach(sem => {
-                        studentData[major][sem].forEach(course => {
-                            tableData.push([sem, course.subject, course.grade, course.credits]);
-                        });
                     });
                 } else {
-                    studentData[major][semester]?.forEach(course => {
-                        tableData.push([course.subject, course.grade, course.credits]);
+                    data[semester]?.forEach(course => {
+                        totalPoints += gradePoints[course.grade] * course.credits;
+                        totalCredits += course.credits;
                     });
                 }
 
-                // إدراج الجدول في PDF
-                doc.autoTable({
-                    head: [columns],
-                    body: tableData,
-                    startY: 80,
-                    theme: "striped",
-                    styles: { fontSize: 10, cellPadding: 3 },
-                    headStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255] },
+                return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "N/A";
+            }
+
+            const gpa = calculateGPA(studentData[major], semester);
+            const semesterText = semester === "all" ? "All Semesters" : `Semester ${semester}`;
+
+            // توليد QR Codes
+            function generateQRCode(text) {
+                const canvas = document.createElement("canvas");
+                const qr = new QRious({
+                    element: canvas,
+                    value: text,
+                    size: 100
                 });
+                return canvas.toDataURL("image/png");
+            }
 
-                // حفظ ملف PDF
-                doc.save(fileName);
-            };
+            const gradesQR = generateQRCode(`https://nusuinfo.netlify.app/details.html?studentId=${studentId}&major=${major}&semester=all`);
+            const certificateQR = generateQRCode(`Awn certifies that this student (${studentName}) with ID ${studentId} is enrolled at the National University. This certificate is not official.`);
 
-            reader.readAsDataURL(blob); // تحويل الصورة إلى Base64
-        } catch (error) {
-            console.error("Error loading logo:", error);
-            alert("Failed to load university logo.");
-        }
+            // إدراج الشعار في أعلى يمين التقرير
+            doc.addImage(logoData, "PNG", 160, 10, 30, 30);
+
+            // ترويسة التقرير
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.text(studentName + " Report", 105, 20, { align: "center" });
+
+            // ملاحظة أن هذا ليس بيانًا رسميًا
+            doc.setFontSize(10);
+            doc.setTextColor(200, 0, 0);
+            doc.text("*** This is NOT an official statement from the university ***", 105, 30, { align: "center" });
+
+            // بيانات الطالب
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Student ID: ${studentId}`, 15, 40);
+            doc.text(`Major: ${major}`, 15, 50);
+            doc.text(`Semester: ${semesterText}`, 15, 60);
+            doc.text(`GPA: ${gpa}`, 15, 70); // ✅ عرض GPA
+
+            // إضافة QR Codes
+            doc.addImage(gradesQR, "PNG", 15, 80, 30, 30);
+           
+
+            doc.addImage(certificateQR, "PNG", 50, 80, 30, 30);
+            
+
+            // إعداد الجدول
+            const tableData = [];
+            const columns = semester === "all"
+                ? ["Semester", "Subject", "Grade", "Credits"]
+                : ["Subject", "Grade", "Credits"];
+
+            if (semester === "all") {
+                Object.keys(studentData[major]).forEach(sem => {
+                    studentData[major][sem].forEach(course => {
+                        tableData.push([sem, course.subject, course.grade, course.credits]);
+                    });
+                });
+            } else {
+                studentData[major][semester]?.forEach(course => {
+                    tableData.push([course.subject, course.grade, course.credits]);
+                });
+            }
+
+            // إدراج الجدول في PDF
+            doc.autoTable({
+                head: [columns],
+                body: tableData,
+                startY: 120,
+                theme: "striped",
+                styles: { fontSize: 10, cellPadding: 3 },
+                headStyles: { fillColor: [44, 62, 80], textColor: [255, 255, 255] },
+            });
+
+            // حفظ ملف PDF
+            doc.save(fileName);
+        };
+
+        reader.readAsDataURL(blob); // تحويل الصورة إلى Base64
+    } catch (error) {
+        console.error("Error loading logo:", error);
+        alert("Failed to load university logo.");
     }
+}
+
 
         document.addEventListener('DOMContentLoaded', () => {
             const rows = document.querySelectorAll('#gradesTable tbody tr');
