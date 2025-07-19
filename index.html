@@ -2,186 +2,15 @@
 <html lang="en">
 
 <head>
-    <link rel="shortcut icon" type="image/x-icon" href="uni-logo.png" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student System</title>
-    <style>
-        /* Global Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Body */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #e9f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #333;
-            position: relative;
-        }
-
-        /* Container */
-        .container {
-            background: #fff;
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 1s ease-out;
-            z-index: 1;
-        }
-
-        /* Heading */
-        h1 {
-            font-size: 28px;
-            margin-bottom: 25px;
-            color: #3a8fbf;
-            font-weight: bold;
-        }
-
-        /* Input & Select Fields */
-        input,
-        select {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 20px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            background-color: #f4f7fa;
-            transition: all 0.3s ease;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #3a8fbf;
-            background-color: #fff;
-            box-shadow: 0 0 8px rgba(58, 143, 191, 0.2);
-            outline: none;
-        }
-
-        /* Button */
-        button {
-            background: linear-gradient(135deg, #3a8fbf, #48a9e6);
-            color: #fff;
-            border: none;
-            padding: 16px 22px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            max-width: 300px;
-            margin: 20px 0;
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(58, 143, 191, 0.3);
-        }
-
-        /* Loading Circle */
-        .loading-circle {
-            display: none;
-            width: 60px;
-            height: 60px;
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3a8fbf;
-            border-radius: 50%;
-            animation: spin 2s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2; /* Ensure the spinner is above the form */
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Shrink & Fade Animation */
-        .shrink-and-fade {
-            animation: shrinkAndFade 1.5s ease-out forwards;
-        }
-
-        @keyframes shrinkAndFade {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            100% {
-                opacity: 0;
-                transform: scale(0.2);
-            }
-        }
-
-        /* Error Message */
-        #error {
-            color: #f44336;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 30px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            input,
-            select,
-            button {
-                font-size: 16px;
-                padding: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-
-            input,
-            select,
-            button {
-                font-size: 14px;
-                padding: 10px;
-            }
-        }
-    </style>
+    <link rel="shortcut icon" type="image/x-icon" href="uni-logo.png" />
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <!-- Loading Circle (Outside the form container) -->
     <div id="loader" class="loading-circle"></div>
 
     <div class="container" id="formContainer">
@@ -221,35 +50,28 @@
             const loader = document.getElementById('loader');
             const submitButton = document.getElementById('submitButton');
 
-            // Error Check
             if (!studentId || !major || !semester) {
                 errorDiv.innerText = "⚠️ Please fill all fields!";
-                errorDiv.style.color = "#f44336";
                 return;
             }
 
-            // Step 1: Fade out form fields smoothly
-            const formElements = document.querySelectorAll("input, select, button");
+            const formElements = document.querySelectorAll("input, select, button, h1");
             formElements.forEach(el => {
                 el.style.transition = "opacity 0.5s ease-out";
                 el.style.opacity = 0;
             });
-
-            // Step 2: Apply shrink and fade animation to the card
+            
             formContainer.classList.add('shrink-and-fade');
-
-            // Step 3: Show loading circle after form disappearance
+            
             setTimeout(() => {
-                loader.style.display = 'block'; // Show the loader
-            }, 1000); // Wait 1 second before showing loader
+                loader.style.display = 'block';
+            }, 500);
 
-            // Step 4: Disable submit button to prevent multiple submissions
             submitButton.disabled = true;
 
-            // Simulate page transition after animation
             setTimeout(() => {
                 window.location.href = `details.html?studentId=${studentId}&major=${major}&semester=${semester}`;
-            }, 5000); // After 5 seconds, transition to the new page
+            }, 2500); // Reduced timeout for a faster redirect
         }
     </script>
 </body>
